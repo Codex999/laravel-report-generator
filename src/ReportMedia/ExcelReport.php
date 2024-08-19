@@ -60,7 +60,11 @@ class ExcelReport extends ReportGenerator
         if ($this->withoutManipulation) {
             $view = view('laravel-report-generator::without-manipulation-excel-template', compact('headers', 'columns', 'showTotalColumns', 'query', 'limit', 'groupByArr', 'orientation', 'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
         } else {
-            $view = view('laravel-report-generator::general-excel-template', compact('headers', 'columns', 'editColumns', 'showTotalColumns', 'styles', 'query', 'limit', 'groupByArr', 'orientation', 'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
+            if($this->customTemplate){
+                $view = view($this->customTemplate, $this->customTemplateVariables);
+            } else {
+                $view = view('laravel-report-generator::general-excel-template', compact('headers', 'columns', 'editColumns', 'showTotalColumns', 'styles', 'query', 'limit', 'groupByArr', 'orientation', 'showHeader', 'showMeta', 'applyFlush', 'showNumColumn'));
+            }
         }
 
         return new ExportView($view);

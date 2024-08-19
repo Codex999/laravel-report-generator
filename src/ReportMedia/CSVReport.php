@@ -4,6 +4,7 @@ namespace Jimmyjs\ReportGenerator\ReportMedia;
 
 use League\Csv\Writer;
 use App, Closure, Exception;
+use Illuminate\Support\Facades\Storage;
 use Jimmyjs\ReportGenerator\ReportGenerator;
 
 class CSVReport extends ReportGenerator
@@ -18,38 +19,21 @@ class CSVReport extends ReportGenerator
 
         if ($save) {
             $filePath = $filename;
-            $csv = Writer::createFromPath($filePath, 'w');
+            $csv = Writer::createFromPath(Storage::path($filePath), 'w');
         } else {
             $csv = Writer::createFromFileObject(new \SplTempFileObject());
         }
 
-        if ($this->showMeta) {
-            foreach ($this->headers['meta'] as $key => $value) {
-                $csv->insertOne([$key, $value]);
-            }
-            $csv->insertOne([' ']);
-        }
-
         $ctr = 1;
 
-        if ($this->showHeader) {
-            $columns = array_keys($this->columns);
-            if (!$this->withoutManipulation && $this->showNumColumn) {
-                array_unshift($columns, 'No');
-            }
-            $csv->insertOne($columns);
-        }
-
-        foreach($this->query->take($this->limit ?: null)->cursor() as $result) {
-            if ($this->withoutManipulation) {
+        foreach($this->query_results_data as $result) {
+            if(!is_array($result)){
                 $data = $result->toArray();
-                if (count($data) > count($this->columns)) array_pop($data);
-                $csv->insertOne($data);
             } else {
-                $formattedRows = $this->formatRow($result);
-                if ($this->showNumColumn) array_unshift($formattedRows, $ctr);
-                $csv->insertOne($formattedRows);
+                $data = $result;
             }
+            if (count($data) > count(array_keys($data))) array_pop($data);
+            $csv->insertOne($data);
             $ctr++;
         }
 

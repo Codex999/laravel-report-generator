@@ -23,6 +23,13 @@ class ReportGenerator
 	protected $withoutManipulation = false;
     protected $showMeta = true;
     protected $showHeader = true;
+    protected $customTemplate = null;
+    protected $customTemplateVariables = null;
+    protected $customHeaderTemplate = null;
+    protected $customFooterTemplate = null;
+    protected $margins = [15,15,10,10];
+    protected $customPageNumber = "";
+    protected $query_results_data;
 
 	public function __construct()
 	{
@@ -158,6 +165,48 @@ class ReportGenerator
 			]);
 		}
 
+		return $this;
+	}
+
+	public function fromTemplate(string $customTemplate, array $customTemplateVariables)
+	{
+		$this->customTemplate = $customTemplate;
+		$this->customTemplateVariables = $customTemplateVariables;
+
+		return $this;
+	}
+
+	public function customHeader(string $customHeaderTemplate)
+	{
+		$this->customHeaderTemplate = $customHeaderTemplate;
+
+		return $this;
+	}
+
+	public function customFooter(string $customFooterTemplate)
+	{
+		$this->customFooterTemplate = $customFooterTemplate;
+
+		return $this;
+	}
+
+	public function margins(int $marginTop = 15, int $marginBottom = 15, int $marginLeft = 10, int $marginRight = 10)
+	{
+		$this->margins = [$marginTop, $marginBottom, $marginLeft, $marginRight];
+
+		return $this;
+	}
+
+	public function customPageNumber(string $customPageNumber)
+	{
+		$this->customPageNumber = $customPageNumber;
+		return $this;
+	}
+	
+	
+	public function csv_data($query_results_data)
+	{
+		$this->query_results_data = $query_results_data;
 		return $this;
 	}
 }
